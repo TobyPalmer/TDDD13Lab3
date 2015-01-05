@@ -17,6 +17,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.support.v7.app.ActionBarActivity;
@@ -30,6 +31,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.os.Build;
 
 public class MainActivity extends ActionBarActivity {
@@ -48,47 +51,43 @@ public class MainActivity extends ActionBarActivity {
 	        StrictMode.setThreadPolicy(policy);
 	      }
 		
-		MainActivity http = new MainActivity();
-		 
-		System.out.println("Testing 1 - Send Http GET request");
-		try {
-			http.sendGet(3,"Emm");
-			System.out.println("success");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("something went wrong");
-			e.printStackTrace();
-		}
- 
-		//System.out.println("\nTesting 2 - Send Http POST request");
-		//http.sendPost();
-		   
-		 
+	    EditText et = (EditText) findViewById(R.id.editText1);
+	    
+	    
+		final Button button = (Button) findViewById(R.id.button1);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	new Thread(new Task(3,"emm")).start();
+            	new Thread(new Task(2,"ant")).start();
+
+            }
+        });
+		
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
 	
-	// HTTP GET request
-		private void sendGet(int id, String searchString) throws Exception {
+
+    class Task implements Runnable {
+    	private int _id;
+    	private String _searchString;
+    	
+    	Task(int id, String searchString){
+    		_id = id;
+    		_searchString = searchString;
+    	}
+    	
+        @Override
+        public void run() {
+
+            try {
+            	sendGet(_id,_searchString);
+            	System.out.println("tråd: " + _id + " klar");
+                //Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        private void sendGet(int id, String searchString) throws Exception {
 			
 			
 			
@@ -117,12 +116,34 @@ public class MainActivity extends ActionBarActivity {
 			in.close();
 			
 			JSONObject json = new JSONObject(response.toString());
+			JSONArray jsonArray = new JSONArray(json.getString("result"));
 	 
-			System.out.println("json length" + json.getJSONObject("result"));
+			System.out.println("json: " + jsonArray.getString(0));
 			
 			//print result
 			System.out.println(response.toString());
 	 
 		}
+    }
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}	
 
 }
