@@ -68,22 +68,13 @@ public class MainActivity extends ActionBarActivity {
 				
 			}
 	    }); 
-	    
-	    
-		final Button button = (Button) findViewById(R.id.button1);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	new Thread(new Task(99,"emm")).start();
-            	new Thread(new Task(98,"ant")).start();
-
-            }
-        });
+	   
 		
 	}
 	
 
     class Task implements Runnable {
-    	private int _id;
+    	private int _id; 
     	private String _searchString;
     	
     	Task(int id, String searchString){
